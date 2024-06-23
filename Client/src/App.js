@@ -108,22 +108,46 @@ const App = () => {
         >
           <ReactVirtualizedTable rows={swimmers} />
         </div>
-        <div style={{ marginTop: 100, marginLeft: 50, marginRight: 25 }}>
-          <Button variant="outlined" style={{ margin: 5 }}>
-            Download Page
-          </Button>
-          <Button variant="contained" style={{ margin: 5 }}>
-            Download All
-          </Button>
+        <div
+          style={{
+            marginTop: 100,
+            marginLeft: 50,
+            marginRight: 25,
+            height: "100%",
+            justifyContent: "center",
+            // pagging: 20,
+            background: "#CDE8E5",
+            borderRadius: 10,
+          }}
+        >
+          <div style={{ marginTop: 10 }}>
+            <label style={{ margin: 5 }}>Download:</label>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-evenly",
+              }}
+            >
+              <Button variant="outlined" style={{ margin: 5 }}>
+                Page
+              </Button>
+              <Button variant="contained" style={{ margin: 5 }}>
+                All
+              </Button>
+            </div>
+          </div>
           <div
             style={{
               alignItems: "center",
+              margin: 10,
             }}
           >
             <div>
               <Dropdown options={events} label={"Event"} />
             </div>
-            <div style={{ marginTop: 50 }}>
+            <div style={{ marginTop: 10 }}>
               <Dropdown
                 options={[{ name: "Male" }, { name: "Female" }]}
                 label={"Gender"}
