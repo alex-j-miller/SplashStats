@@ -84,7 +84,7 @@ const App = () => {
         <img
           src={`${process.env.PUBLIC_URL}/splash.svg`}
           alt="logo"
-          style={{ width: "80px", margin: 20 }}
+          style={{ width: "80px", margin: 20, alignItems: "center" }}
         />
         <h1 style={{ color: "#EEF7FF", fontSize: 50 }}>
           <strong>Splash Stats</strong>
