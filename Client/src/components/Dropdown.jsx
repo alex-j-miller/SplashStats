@@ -5,15 +5,16 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 
-export default function Dropdown({ label, options, defaultOption }) {
-  const [value, setValue] = useState("");
+export default function Dropdown({ label, options, defaultOption, onSelect }) {
+  const [value, setValue] = useState(options[0].name);
 
-  useEffect(() => {
-    setValue(options[0].name);
-  }, [options]);
+  // useEffect(() => {
+  //   setValue(options[0].name);
+  // }, [options]);
 
   const handleChange = (event) => {
     setValue(event.target.value);
+    onSelect(event.target.value);
   };
 
   return (

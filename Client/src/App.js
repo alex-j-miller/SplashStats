@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./index.css";
 import Dropdown from "./components/Dropdown.jsx";
 import ReactVirtualizedTable from "./components/ReactVirtualizedTable.jsx";
-import Button from "@mui/material/Button";
+import DownloadButton from "./components/DownloadButton.jsx";
 
 const parseCSV = (str) => {
   const lines = str.trim().split("\n");
@@ -19,26 +19,28 @@ const parseCSV = (str) => {
 const App = () => {
   const [swimmers, setSwimmers] = useState([]);
   const [error, setError] = useState(null);
+  const [event, setEvent] = useState("50 Free");
+  const [gender, setGender] = useState("Male");
 
   const events = [
-    { name: "50 Y Free" },
-    { name: "100 Y Free" },
-    { name: "200 Y Free" },
-    { name: "500 Y Free" },
-    { name: "1000 Y Free" },
-    { name: "1650 Y Free" },
-    { name: "50 Y Back" },
-    { name: "100 Y Back" },
-    { name: "200 Y Back" },
-    { name: "50 Y Breast" },
-    { name: "100 Y Breast" },
-    { name: "200 Y Breast" },
-    { name: "50 Y Fly" },
-    { name: "100 Y Fly" },
-    { name: "200 Y Fly" },
-    { name: "100 Y IM" },
-    { name: "200 Y IM" },
-    { name: "400 Y IM" },
+    { name: "50 Free" },
+    { name: "100 Free" },
+    { name: "200 Free" },
+    { name: "500 Free" },
+    { name: "1000 Free" },
+    { name: "1650 Free" },
+    { name: "50 Back" },
+    { name: "100 Back" },
+    { name: "200 Back" },
+    { name: "50 Breast" },
+    { name: "100 Breast" },
+    { name: "200 Breast" },
+    { name: "50 Fly" },
+    { name: "100 Fly" },
+    { name: "200 Fly" },
+    { name: "100 IM" },
+    { name: "200 IM" },
+    { name: "400 IM" },
   ];
 
   useEffect(() => {
@@ -51,21 +53,37 @@ const App = () => {
       })
       .then((data) => {
         const parsedData = parseCSV(data);
-        setSwimmers(
-          parsedData
-            .filter(
-              (swimmer) =>
-                swimmer.swimmer_name === "Jaden L Brookens" ||
-                swimmer.swimmer_name === "Anthony C Crudele"
-            )
-            .sort(() => Math.random() - 0.5)
+        const filteredData = parsedData.filter(
+          (swimmer) => swimmer.Event === event && swimmer.Gender === gender
         );
+
+        filteredData.forEach((swimmer) => {
+          console.log("FILTERED: " + swimmer.Event);
+        });
+
+        const sortedData = filteredData.sort(function (a, b) {
+          return a["Time in Seconds"] - b["Time in Seconds"];
+        });
+
+        sortedData.forEach((swimmer) => {
+          console.log("SORTED: " + swimmer["Time in Seconds"]);
+        });
+
+        setSwimmers(sortedData);
       })
       .catch((error) => {
         console.error("Error fetching the CSV data:", error);
         setError(error.message);
       });
-  }, []);
+  }, [event, gender]);
+
+  const onGenderSelect = (newGender) => {
+    setGender(newGender);
+  };
+
+  const onEventSelect = (newEvent) => {
+    setEvent(newEvent);
+  };
 
   if (error) {
     return <div>Error: {error}</div>;
@@ -87,7 +105,7 @@ const App = () => {
           style={{ width: "80px", margin: 20, alignItems: "center" }}
         />
         <h1 style={{ color: "#EEF7FF", fontSize: 50 }}>
-          <strong>Splash Stats</strong>
+          <strong>SplashStats</strong>
         </h1>
       </div>
 
@@ -115,11 +133,34 @@ const App = () => {
             marginRight: 25,
             height: "100%",
             justifyContent: "center",
-            // pagging: 20,
+            padding: 10,
             background: "#CDE8E5",
             borderRadius: 10,
           }}
         >
+          <div
+            style={{
+              alignItems: "center",
+              margin: 10,
+              padding: 10,
+            }}
+          >
+            <label style={{ margin: 5 }}>Sort:</label>
+            <div style={{ marginTop: 5 }}>
+              <Dropdown
+                options={events}
+                label={"Event"}
+                onSelect={onEventSelect}
+              />
+            </div>
+            <div style={{ marginTop: 10 }}>
+              <Dropdown
+                options={[{ name: "Male" }, { name: "Female" }]}
+                label={"Gender"}
+                onSelect={onGenderSelect}
+              />
+            </div>
+          </div>
           <div style={{ marginTop: 10 }}>
             <label style={{ margin: 5 }}>Download:</label>
             <div
@@ -128,30 +169,11 @@ const App = () => {
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-evenly",
+                marginBottom: 10,
               }}
             >
-              <Button variant="outlined" style={{ margin: 5 }}>
-                Page
-              </Button>
-              <Button variant="contained" style={{ margin: 5 }}>
-                All
-              </Button>
-            </div>
-          </div>
-          <div
-            style={{
-              alignItems: "center",
-              margin: 10,
-            }}
-          >
-            <div>
-              <Dropdown options={events} label={"Event"} />
-            </div>
-            <div style={{ marginTop: 10 }}>
-              <Dropdown
-                options={[{ name: "Male" }, { name: "Female" }]}
-                label={"Gender"}
-              />
+              <DownloadButton variant="outlined" text="Page" />
+              <DownloadButton variant="contained" text="All" />
             </div>
           </div>
         </div>

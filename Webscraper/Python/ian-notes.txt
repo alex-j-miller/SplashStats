@@ -1,0 +1,12 @@
+
+Testing is important
+Testing library - Jest? cypress?
+And would say, when it comes to code changes and PRs, most of the code review comments I’ve seen are not related to actual code changes, 
+but comments related to test files and changes. They are just as important to the code changes you are making
+
+having certain things like a state management library and logging locatives always great to see
+
+trying make a website that’s based of rebar or angular on the front end and Java or node on the backend is just good practice in general
+I think react will be good, it seems to be be a very popular front end framework these days, and on the backend, along as its JavaScript or Java based, you should be set
+
+backend - aws or gcp

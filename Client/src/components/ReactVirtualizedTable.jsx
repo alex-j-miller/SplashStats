@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -9,30 +9,26 @@ import Paper from "@mui/material/Paper";
 import { TableVirtuoso } from "react-virtuoso";
 
 const columns = [
+  { width: 25, label: "Rank", dataKey: "Rank" },
   {
-    width: 200,
+    width: 100,
     label: "Swimmer",
-    dataKey: "swimmer_name",
+    dataKey: "Name",
   },
   {
-    width: 120,
+    width: 100,
     label: "Event",
-    dataKey: "event",
+    dataKey: "Event",
   },
   {
-    width: 120,
+    width: 150,
     label: "Meet",
-    dataKey: "meet_name",
+    dataKey: "Meet",
   },
   {
-    width: 120,
-    label: "Date",
-    dataKey: "date",
-  },
-  {
-    width: 120,
+    width: 75,
     label: "Time",
-    dataKey: "time",
+    dataKey: "Time",
   },
 ];
 
@@ -89,8 +85,16 @@ function rowContent(_index, row) {
 }
 
 export default function ReactVirtualizedTable({ rows }) {
+  const [height, setHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => setHeight(window.innerHeight);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
-    <Paper style={{ height: 1200, width: "100%" }}>
+    <Paper style={{ height: height - 150, width: "100%" }}>
       <TableVirtuoso
         data={rows}
         components={VirtuosoTableComponents}
