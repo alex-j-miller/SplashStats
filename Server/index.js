@@ -11,95 +11,111 @@ function getCacheKey(team_id, event_id, gender) {
 }
 
 app.get("/", (req, res) => {
-  res.send("<h1>This is the API for SplashStats</h1>");
+  try {
+    res.send("<h1>This is the API for SplashStats</h1>");
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.get("/team_id/:team/event_id/:event/gender/:gender", async (req, res) => {
-  console.log("Request received");
-  console.log(req.params);
+  try {
+    console.log("Request received");
+    console.log(req.params);
 
-  const team_id = parseInt(req.params.team);
-  const event_id = parseInt(req.params.event);
-  const gender = req.params.gender;
+    const team_id = parseInt(req.params.team);
+    const event_id = parseInt(req.params.event);
+    const gender = req.params.gender;
 
-  console.log("Checking Cache...");
-  const cacheKey = getCacheKey(team_id, event_id, gender);
-  const value = myCache.get(cacheKey);
-  if (value == undefined) {
-    console.log("Cache miss...");
-    console.log("Scraping event data...");
+    console.log("Checking Cache...");
+    const cacheKey = getCacheKey(team_id, event_id, gender);
+    const value = myCache.get(cacheKey);
+    if (value == undefined) {
+      console.log("Cache miss...");
+      console.log("Scraping event data...");
 
-    // Dynamically import the scrapeEvent function
-    const { scrapeEvent } = await import("./scraper/scrape.mjs");
+      // Dynamically import the scrapeEvent function
+      const { scrapeEvent } = await import("./scraper/scrape.mjs");
 
-    const data = await scrapeEvent(event_id, gender, team_id);
+      const data = await scrapeEvent(event_id, gender, team_id);
 
-    console.log("Setting cache...");
-    myCache.set(cacheKey, data);
+      console.log("Setting cache...");
+      myCache.set(cacheKey, data);
 
-    res.json(data);
-  } else {
-    console.log("Cache hit...");
-    res.json(value);
+      res.json(data);
+    } else {
+      console.log("Cache hit...");
+      res.json(value);
+    }
+  } catch (error) {
+    next(error);
   }
 });
 
 app.get("/team_id/:team", async (req, res) => {
-  console.log("Request received");
-  console.log(req.params);
+  try {
+    console.log("Request received");
+    console.log(req.params);
 
-  const team_id = parseInt(req.params.team);
+    const team_id = parseInt(req.params.team);
 
-  console.log("Checking Cache...");
-  const cacheKey = getCacheKey(team_id, "ALL", "ALL");
-  const value = myCache.get(cacheKey);
-  if (value == undefined) {
-    console.log("Cache miss...");
-    console.log("Scraping team data...");
+    console.log("Checking Cache...");
+    const cacheKey = getCacheKey(team_id, "ALL", "ALL");
+    const value = myCache.get(cacheKey);
+    if (value == undefined) {
+      console.log("Cache miss...");
+      console.log("Scraping team data...");
 
-    // Dynamically import the scrapeTeam function
-    const { scrapeTeam } = await import("./scraper/scrape.mjs");
+      // Dynamically import the scrapeTeam function
+      const { scrapeTeam } = await import("./scraper/scrape.mjs");
 
-    const data = await scrapeTeam(team_id);
+      const data = await scrapeTeam(team_id);
 
-    console.log("Setting cache...");
-    myCache.set(cacheKey, data);
+      console.log("Setting cache...");
+      myCache.set(cacheKey, data);
 
-    res.json(data);
-  } else {
-    console.log("Cache hit...");
-    res.json(value);
+      res.json(data);
+    } else {
+      console.log("Cache hit...");
+      res.json(value);
+    }
+  } catch (error) {
+    next(error);
   }
 });
 
 app.get("/download-csv/:team_id", async (req, res) => {
-  console.log(req.params);
+  try {
+    console.log(req.params);
 
-  const team_id = parseInt(req.params.team_id);
+    const team_id = parseInt(req.params.team_id);
 
-  console.log("Checking Cache...");
-  const cacheKey = getCacheKey(team_id, "ALL", "ALL");
-  const value = myCache.get(cacheKey);
+    console.log("Checking Cache...");
+    const cacheKey = getCacheKey(team_id, "ALL", "ALL");
+    const value = myCache.get(cacheKey);
 
-  let data;
-  if (value == undefined) {
-    console.log("Scraping team data...");
+    let data;
+    if (value == undefined) {
+      console.log("Scraping team data...");
 
-    // Dynamically import the scrapeTeam function
-    const { scrapeTeam } = await import("./scraper/scrape.mjs");
+      // Dynamically import the scrapeTeam function
+      const { scrapeTeam } = await import("./scraper/scrape.mjs");
 
-    data = await scrapeTeam(team_id);
-  } else {
-    console.log("Cache hit...");
-    data = value;
+      data = await scrapeTeam(team_id);
+    } else {
+      console.log("Cache hit...");
+      data = value;
+    }
+
+    const json2csv = new Parser();
+    const csv = json2csv.parse(data);
+
+    res.header("Content-Type", "text/csv");
+    res.attachment("data.csv");
+    res.send(csv);
+  } catch (error) {
+    next(error);
   }
-
-  const json2csv = new Parser();
-  const csv = json2csv.parse(data);
-
-  res.header("Content-Type", "text/csv");
-  res.attachment("data.csv");
-  res.send(csv);
 });
 
 app.listen(port, () => {
