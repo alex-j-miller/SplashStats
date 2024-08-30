@@ -1,6 +1,5 @@
 const express = require("express");
 const app = express();
-const router = express.Router();
 const { Parser } = require("json2csv");
 const NodeCache = require("node-cache");
 const myCache = new NodeCache({ stdTTL: 28800 }); // 8 hours
@@ -10,7 +9,8 @@ function getCacheKey(team_id, event_id, gender) {
   return `${team_id}-${event_id}-${gender}`;
 }
 
-app.get("/", (req, res) => {
+// Route: Homepage
+app.get("/", (req, res, next) => {
   try {
     res.send("<h1>This is the API for SplashStats</h1>");
   } catch (error) {
@@ -18,41 +18,46 @@ app.get("/", (req, res) => {
   }
 });
 
-app.get("/team_id/:team/event_id/:event/gender/:gender", async (req, res) => {
-  try {
-    console.log("Request received");
-    console.log(req.params);
+// Route: Fetch data for specific team, event, and gender
+app.get(
+  "/team_id/:team/event_id/:event/gender/:gender",
+  async (req, res, next) => {
+    try {
+      console.log("Request received");
+      console.log(req.params);
 
-    const team_id = parseInt(req.params.team);
-    const event_id = parseInt(req.params.event);
-    const gender = req.params.gender;
+      const team_id = parseInt(req.params.team);
+      const event_id = parseInt(req.params.event);
+      const gender = req.params.gender;
 
-    console.log("Checking Cache...");
-    const cacheKey = getCacheKey(team_id, event_id, gender);
-    const value = myCache.get(cacheKey);
-    if (value == undefined) {
-      console.log("Cache miss...");
-      console.log("Scraping event data...");
+      console.log("Checking Cache...");
+      const cacheKey = getCacheKey(team_id, event_id, gender);
+      const value = myCache.get(cacheKey);
+      if (value == undefined) {
+        console.log("Cache miss...");
+        console.log("Scraping event data...");
 
-      // Dynamically import the scrapeEvent function
-      const { scrapeEvent } = await import("./scraper/scrape.mjs");
+        // Dynamically import the scrapeEvent function
+        const { scrapeEvent } = await import("./scraper/scrape.mjs");
 
-      const data = await scrapeEvent(event_id, gender, team_id);
+        const data = await scrapeEvent(event_id, gender, team_id);
 
-      console.log("Setting cache...");
-      myCache.set(cacheKey, data);
+        console.log("Setting cache...");
+        myCache.set(cacheKey, data);
 
-      res.json(data);
-    } else {
-      console.log("Cache hit...");
-      res.json(value);
+        res.json(data);
+      } else {
+        console.log("Cache hit...");
+        res.json(value);
+      }
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error);
   }
-});
+);
 
-app.get("/team_id/:team", async (req, res) => {
+// Route: Fetch data for specific team
+app.get("/team_id/:team", async (req, res, next) => {
   try {
     console.log("Request received");
     console.log(req.params);
@@ -84,7 +89,8 @@ app.get("/team_id/:team", async (req, res) => {
   }
 });
 
-app.get("/download-csv/:team_id", async (req, res) => {
+// Route: Download team data as CSV
+app.get("/download-csv/:team_id", async (req, res, next) => {
   try {
     console.log(req.params);
 
@@ -118,8 +124,7 @@ app.get("/download-csv/:team_id", async (req, res) => {
   }
 });
 
+// Start server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-
-module.exports = router;
