@@ -1,6 +1,16 @@
-import puppeteer from "puppeteer";
+// import puppeteer from "puppeteer-core";
 import { createObjectCsvWriter } from "csv-writer";
-// import { get } from "../server";
+import chromium from "chrome-aws-lambda";
+
+async function getBrowser() {
+  return await chromium.puppeteer.launch({
+    args: [...chromium.args, "--hide-scrollbars", "--disable-web-security"],
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath,
+    headless: true,
+    ignoreHTTPSErrors: true,
+  });
+}
 
 function writeCsv(data) {
   const csvWriter = createObjectCsvWriter({
@@ -30,7 +40,7 @@ function writeCsv(data) {
 
 async function scrapeTable(url, tableSelector) {
   // Launch a new browser instance
-  const browser = await puppeteer.launch();
+  const browser = await getBrowser();
   const page = await browser.newPage();
 
   // Navigate to the URL

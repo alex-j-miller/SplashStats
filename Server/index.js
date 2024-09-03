@@ -9,7 +9,6 @@ function getCacheKey(team_id, event_id, gender) {
   return `${team_id}-${event_id}-${gender}`;
 }
 
-// Route: Homepage
 app.get("/", (req, res, next) => {
   try {
     res.send("<h1>This is the API for SplashStats</h1>");
@@ -18,7 +17,6 @@ app.get("/", (req, res, next) => {
   }
 });
 
-// Route: Fetch data for specific team, event, and gender
 app.get(
   "/team_id/:team/event_id/:event/gender/:gender",
   async (req, res, next) => {
@@ -56,7 +54,6 @@ app.get(
   }
 );
 
-// Route: Fetch data for specific team
 app.get("/team_id/:team", async (req, res, next) => {
   try {
     console.log("Request received");
@@ -89,7 +86,6 @@ app.get("/team_id/:team", async (req, res, next) => {
   }
 });
 
-// Route: Download team data as CSV
 app.get("/download-csv/:team_id", async (req, res, next) => {
   try {
     console.log(req.params);
