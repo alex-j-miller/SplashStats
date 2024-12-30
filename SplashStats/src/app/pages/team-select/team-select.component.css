@@ -1,0 +1,35 @@
+mat-card {
+  margin: 100px;
+  width: 25%;
+  height: 350px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+mat-card-title {
+  margin: 100px;
+  font-size: 3rem;
+}
+
+button,
+mat-icon {
+  margin-left: 10px;
+}
+
+div.background {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  height: 100vh;
+  background-image: linear-gradient(to bottom right, #00509e, #00c6d7);
+}
+
+div.spinner {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}

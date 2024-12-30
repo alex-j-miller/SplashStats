@@ -1,0 +1,26 @@
+<div class="background">
+  <mat-card>
+    @if (!isLoading) {
+    <mat-card-title>SplashStats</mat-card-title>
+    <mat-card-content>
+      <mat-card-subtitle>
+        @if (errorMessage === '') { Enter Team ID } @else {
+        {{ errorMessage }}
+        }
+      </mat-card-subtitle>
+      <mat-form-field>
+        <input matInput required [(ngModel)]="teamId" placeholder="Team ID" />
+      </mat-form-field>
+      <mat-icon matTooltip="PLACEHOLDER">help</mat-icon>
+      <button mat-raised-button color="primary" (click)="onSelectTeam()">
+        Select
+      </button>
+    </mat-card-content>
+    } @else {
+    <div class="spinner">
+      <mat-progress-spinner mode="indeterminate" diameter="75">
+      </mat-progress-spinner>
+    </div>
+    }
+  </mat-card>
+</div>
